@@ -1,22 +1,64 @@
 # STRATUM Seismic
 
-**Compare elastic frame systems under the same earthquake motion.**
+**Controlled elastic frame comparison with independent numerical verification**
+
+**Author: [Atharv Sharma](AUTHORS.md)** · Research software portfolio
 
 [![Tests](https://github.com/Valomaxed/stratum-seismic/actions/workflows/tests.yml/badge.svg)](https://github.com/Valomaxed/stratum-seismic/actions/workflows/tests.yml)
-![Stage: research prototype](https://img.shields.io/badge/stage-research%20prototype-555555)
 
-An independent Python and browser workspace for unbraced, X-braced and chevron frame response, with an OpenSees verification workflow. No truss repository or machine-learning model is required.
+**Academic review:** [Start here](START_HERE.md) · [Results](docs/RESULTS.md) · [Reproduce](docs/REPRODUCIBILITY.md) · [Architecture](docs/ARCHITECTURE.md)
 
-![Independent OpenSees comparison](data/seismic-validation/opensees-comparison.png)
+Private repository: arrange access before sharing the CV link. [Reviewer access](docs/REVIEWER_ACCESS.md).
 
-## Capabilities
+## Research question
 
-- Compare 2–8-story elastic 2D frames using identical geometry, floor masses and beam/column sections.
-- Match brace steel volume between X-braced and chevron configurations.
-- Read PEER-style acceleration `.AT2` files with explicit units and provenance.
-- Compute periods, drift, relative roof displacement, absolute acceleration and base-shear demand.
-- Animate frame translation, inspect colored comparison plots, and export JSON/CSV results.
-- Check implementation against analytical solutions, an independent ODE integrator, OpenSees and time-step refinement.
+How do unbraced, X-braced and chevron frames change elastic drift and base-shear demand under controlled common excitation, and how can the implementation be independently verified?
+
+This project implements a Python frame solver and browser comparison. Geometry, beam/column sections and prescribed floor masses are held constant. X and chevron layouts use equal brace steel volume. A separate OpenSees worker supplies independent implementation checks.
+
+## Implemented work
+
+| Component | Implementation and review evidence |
+|---|---|
+| Frame mechanics | [Beam-column/brace assembly and condensation](seismic_frame/model.py), fixed bases and floor translation constraints |
+| Dynamics | [Newmark average acceleration](seismic_frame/dynamics.py), Rayleigh damping and response recovery |
+| Excitation handling | AT2 count/time-step/unit checks, explicit scaling and [record provenance](web/records/README.md) |
+| Verification | [Analytical/ODE tests](tests/test_model.py), [independent OpenSees model](seismic_frame/reference.py), [comparison and refinement protocol](seismic_frame/benchmark.py) |
+| Interface | [Frame playback, colored plots and JSON/CSV exports](web/seismic.js) |
+
+NumPy/SciPy provide linear algebra. Assembly, reduction, record handling, response calculation and comparison are implemented in this repository. The production solver runs without OpenSees. [Suggested source review route](START_HERE.md).
+
+## Example result and interpretation
+
+Four stories; common El Centro example (PGA 0.31882 g); factor 1.0; 5% target damping:
+
+| System | First period (s) | Peak drift (%) | Peak roof displacement (mm) | Peak base-shear demand (kN) |
+|---|---:|---:|---:|---:|
+| Unbraced | 1.475 | 1.373 | 127.25 | 291.7 |
+| X-braced | 0.409 | 0.379 | 42.21 | 993.0 |
+| Chevron | 0.339 | 0.270 | 29.24 | 1145.0 |
+
+![Controlled seismic-frame results](data/seismic-validation/review-summary.png)
+
+For this record and elastic model, bracing reduces computed drift while increasing peak base-shear demand. Displacement and force demands must be examined together. This example does not establish a universal ranking of brace systems. [Settings, response definitions and interpretation](docs/RESULTS.md).
+
+## Independent verification at a glance
+
+The saved benchmark passes **9/9 case/system comparisons** and **3/3 time-step studies**. Full floor histories, modes, shear, peaks and support/damping balance are checked. Floor-history refinement ratios are approximately four.
+
+[Verification report](data/seismic-validation/report.md) · [Machine-readable evidence](data/seismic-validation/report.json) · [Reproduction instructions](docs/REPRODUCIBILITY.md)
+
+This verifies the stated elastic implementation. A numerical-source or record change invalidates the report's fresh PASS. Physical validation and omitted nonlinear mechanisms remain separate work.
+
+## Fast numerical review
+
+After installing requirements.txt, run from the repository root:
+
+```bash
+python examples/quick_review.py
+```
+
+This recomputes the example table with the production solver. [Recorded output](data/review-example.json). No ML model, server or OpenSees installation is required.
 
 ## Quick start
 
@@ -43,12 +85,6 @@ python -m venv .venv
 ```
 
 Open **http://127.0.0.1:8767/**. The bundled El Centro example runs by default. Adjust frame parameters or import records, then choose **Compare frames**. Changing settings marks displayed results as stale until recomputed.
-
-## Model and comparison basis
-
-The model assembles elastic Euler–Bernoulli beams/columns and axial braces, with fixed column bases, rigid horizontal floor translations, prescribed floor masses, and statically condensed massless vertical/rotation DOFs. Newmark average acceleration integrates the full retained floor system. Rayleigh damping targets its first two modes separately for each frame.
-
-The same acceleration and amplitude factor are applied to every configuration. No spectrum matching, filtering, detrending or baseline correction is applied. Base-shear demand includes stiffness and damping contributions; its opposite sign represents ground-on-frame reaction. [Detailed assumptions and protocol](docs/RESEARCH.md).
 
 ## Tests
 
@@ -92,4 +128,4 @@ Elastic implementation verification is not experimental validation or code compl
 
 Truss/bridge FEM, sensing and damage estimation live in **[STRATUM](https://github.com/Valomaxed/stratum)**.
 
-[Architecture](docs/ARCHITECTURE.md) · [Research](docs/RESEARCH.md) · [Migration](docs/REPOSITORY_SPLIT.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Issues](https://github.com/Valomaxed/stratum-seismic/issues)
+[Academic review](START_HERE.md) · [Results](docs/RESULTS.md) · [Reproduce](docs/REPRODUCIBILITY.md) · [Authorship](AUTHORS.md) · [Citation](CITATION.cff) · [Architecture](docs/ARCHITECTURE.md) · [Research](docs/RESEARCH.md) · [Migration](docs/REPOSITORY_SPLIT.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Issues](https://github.com/Valomaxed/stratum-seismic/issues)

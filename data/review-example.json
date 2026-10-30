@@ -1,0 +1,50 @@
+{
+  "example": "Controlled elastic response comparison",
+  "frame": {
+    "stories": 4,
+    "story_height_m": 3.2,
+    "bay_width_m": 6.0,
+    "floor_mass_t": 40.0,
+    "damping_ratio": 0.05,
+    "brace_area_mm2": 2000.0,
+    "column_area_mm2": 12000.0,
+    "column_inertia_cm4": 20000.0,
+    "beam_area_mm2": 8000.0,
+    "beam_inertia_cm4": 12000.0
+  },
+  "record": {
+    "name": "El Centro 1940 NS, Peknold example",
+    "sha256": "fcc4417f9eba2083d8573010659d1e8177e1f795f47a8e8faa9382ef6fa753a0",
+    "npts": 1559,
+    "dt": 0.02,
+    "duration_s": 31.16,
+    "scaled_pga_g": 0.31882
+  },
+  "rows": [
+    {
+      "label": "Unbraced",
+      "period_s": 1.4754393906752807,
+      "peak_drift_pct": 1.3731135300121236,
+      "peak_roof_mm": 127.2491845753179,
+      "peak_base_shear_kn": 291.7028343080829,
+      "brace_volume_m3": 0
+    },
+    {
+      "label": "X-braced",
+      "period_s": 0.4093172219242147,
+      "peak_drift_pct": 0.37862886956830466,
+      "peak_roof_mm": 42.21174742593276,
+      "peak_base_shear_kn": 992.9873761299658,
+      "brace_volume_m3": 0.1088
+    },
+    {
+      "label": "Chevron",
+      "period_s": 0.33883053997548,
+      "peak_drift_pct": 0.2703184443212859,
+      "peak_roof_mm": 29.243345897507574,
+      "peak_base_shear_kn": 1145.0153250848896,
+      "brace_volume_m3": 0.10879999999999998
+    }
+  ],
+  "scope": "One attributed example record; these results are not a general ranking of bracing systems."
+}

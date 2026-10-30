@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "stratum-seismic"
 version = "0.1.0"
+authors = [{ name = "Atharv Sharma" }]
 description = "Elastic seismic frame comparisons with independent OpenSees verification"
 readme = "README.md"
 requires-python = ">=3.12"
