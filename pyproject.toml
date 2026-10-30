@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stratum-seismic"
+version = "0.1.0"
+description = "Elastic seismic frame comparisons with independent OpenSees verification"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["numpy>=1.24", "scipy>=1.10"]
+
+[project.scripts]
+stratum-seismic = "seismic_frame.__main__:main"
+
+[project.urls]
+Repository = "https://github.com/Valomaxed/stratum-seismic"
+Issues = "https://github.com/Valomaxed/stratum-seismic/issues"
+
+[tool.setuptools.packages.find]
+include = ["seismic_frame*"]
