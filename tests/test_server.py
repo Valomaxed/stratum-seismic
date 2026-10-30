@@ -1,5 +1,6 @@
 """Standalone service integration checks; no truss or ML artifacts required."""
 import json
+import http.client
 import threading
 import unittest
 import urllib.request
@@ -51,7 +52,17 @@ class ServerTests(unittest.TestCase):
         for body in ('[]', '{invalid', '{"scale_factor": NaN}', '{}'):
             self.assertEqual(self.request('/api/seismic', body)[0], 400)
         self.assertEqual(self.request('/api/analyze', '{}')[0], 404)
-        self.assertEqual(self.request('/api/seismic', 'x'*2_000_001)[0], 413)
+        # The service rejects an oversized Content-Length before reading a body.
+        # Send headers only: writing a 2 MB body after an early 413 can race the
+        # closed HTTP/1.0 socket and raise BrokenPipeError on some platforms.
+        connection = http.client.HTTPConnection('127.0.0.1', self.server.server_port, timeout=10)
+        try:
+            connection.request('POST', '/api/seismic', headers={'Content-Length': '2000001'})
+            response = connection.getresponse()
+            self.assertEqual(response.status, 413)
+            response.read()
+        finally:
+            connection.close()
 
 
 if __name__ == '__main__':
